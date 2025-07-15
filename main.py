@@ -25,20 +25,22 @@ def root(db: db_dependency, user: user_dependency, create_post_request: CreatePo
     post_title: str = create_post_request.title
     post_data: str = create_post_request.post_data
 
+    TITLE_MIN_CHAR_COUNT: int = 12
+    POST_DATA_MIN_WORD_COUNT: int = 120
+
     if is_empty(post_title) is False or is_empty(post_data) is False:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
             detail='can not accept empty data'
         )
-    
-    if len(post_title) < 12:
+
+    if len(post_title) < TITLE_MIN_CHAR_COUNT:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
             detail='the title must at least be 12 characters'
         )
-    
-    if len(post_data.split()) < 120:
-        print(len(post_data.split()))
+
+    if len(post_data.split()) < POST_DATA_MIN_WORD_COUNT:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
             detail='the post must at least be 120 words'
@@ -50,12 +52,12 @@ def root(db: db_dependency, user: user_dependency, create_post_request: CreatePo
         post_data=post_data,
         title=post_title
     )
-    
+
     try:
         db.add(post)
         db.commit()
         db.refresh(post)
-    
+
         return {"post": post}
     except IntegrityError:
         db.rollback()
