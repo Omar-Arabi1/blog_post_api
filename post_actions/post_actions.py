@@ -85,3 +85,23 @@ async def update_comment(comment_id: str, db: db_dependency, user: user_dependen
     db.refresh(comment)
 
     return {'updated_comment': comment}
+
+@router.delete('/delete_comment/{comment_id}')
+async def delete_comment(comment_id: str, user: user_dependency, db: db_dependency) -> None:
+    check_logged_in(user=user)
+
+    comment: Comment = db.query(Comment).filter(Comment.id == comment_id).first()
+    
+    if comment is None or comment.creator_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='could not find the comment'
+        )
+        
+    deleted_comment: Comment = comment
+
+    db.query(Comment).filter(Comment.id == comment_id).delete()
+    db.commit()
+
+    return {'deleted_comment': deleted_comment}
+    
