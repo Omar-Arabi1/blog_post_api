@@ -18,3 +18,15 @@ class CreateUserRequest(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+class Post(Base):
+    __tablename__ = 'posts'
+    
+    id = Column(String, primary_key=True)
+    creator_id = Column(String)
+    post_data = Column(String)
+    title = Column(String, unique=True)
+
+class CreatePost(BaseModel):
+    post_data: str
+    title: str
