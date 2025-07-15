@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from fastapi import Depends
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./passwords.db"
+SQLALCHEMY_DATABASE_URL = "sqlite:///./posts.db"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 
