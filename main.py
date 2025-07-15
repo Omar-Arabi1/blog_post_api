@@ -43,7 +43,7 @@ async def show_posts(db: db_dependency, user: user_dependency) -> None:
     return {'posts': posts_to_show}
         
 
-@app.post('/post')
+@app.post('/launch_post')
 async def root(db: db_dependency, user: user_dependency, create_post_request: CreatePost):
     check_logged_in(user=user)
 
