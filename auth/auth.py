@@ -37,7 +37,7 @@ async def create_user(db: db_dependency, create_user_request: CreateUserRequest)
         >>> https://base_link.com/auth json={username: <username>, password: <password>}
         output -> { user_attributes }
     """
-    if is_empty(create_user_request.username) is False or is_empty(create_user_request.password) is False:
+    if is_empty(create_user_request.username) is True or is_empty(create_user_request.password) is True:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
             detail='can not accept an empty username or password'

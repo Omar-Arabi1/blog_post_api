@@ -56,6 +56,12 @@ async def root(db: db_dependency, user: user_dependency, create_post_request: Cr
     post_title: str = create_post_request.title
     post_data: str = create_post_request.post_data
 
+    if is_empty(post_title) is True:
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            detail="can not accept an empty title"
+        )
+
     if len(post_title) < TITLE_MIN_CHAR_COUNT and len(post_title) > TITLE_MAX_CHAR_COUNT:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
@@ -94,16 +100,16 @@ async def update_post(post_id: str, db: db_dependency, user: user_dependency, up
 
     post: Post = db.query(Post).filter(post_id == Post.id).first()
 
-    if post is None:
+    if post is None or post.creator_id != user.id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail='the id could not be found'
         )
 
-    if post.creator_id != user.id:
+    if is_empty(updated_title) is True:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail='the id could not be found'
+            detail='can not accept an empty title'
         )
 
     if len(updated_title) < TITLE_MIN_CHAR_COUNT or len(updated_title) > TITLE_MAX_CHAR_COUNT:
@@ -112,18 +118,13 @@ async def update_post(post_id: str, db: db_dependency, user: user_dependency, up
             detail='could not accept title'
         )
 
-    updated_post: Post = Post(
-        id=post.id,
-        creator_id=user.id,
-        post_data=post.post_data,
-        title=updated_title
-    )
+    post.title = updated_title
 
     try:
-        db.add(updated_post)
-        db.commit(updated_post)
-        db.refresh(updated_post)
-        return {'updated_password'}
+        db.add(post)
+        db.commit()
+        db.refresh(post)
+        return {'updated_title': post.title}
     except IntegrityError:
         db.rollback()
         raise HTTPException(
