@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 
 from auth.auth import user_dependency
 from databases.database import db_dependency
-from models.models import Post, ShowUser, Users
+from models.models import Post, Users
 from helpers.check_logged_in import check_logged_in
 from helpers.is_empty import is_empty
 

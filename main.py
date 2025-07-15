@@ -9,7 +9,7 @@ from post_actions import post_actions
 from user_actions import user_actions
 from databases.database import db_dependency, Base, engine
 from helpers.check_logged_in import check_logged_in
-from models.models import Comment, Post, CreatePost, ShowPostData, ShowPosts, Users
+from models.models import Comment, Post, CreatePost, Users
 from helpers.is_empty import is_empty
 
 app = FastAPI()
