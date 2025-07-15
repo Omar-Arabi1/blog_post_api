@@ -30,3 +30,8 @@ class Post(Base):
 class CreatePost(BaseModel):
     post_data: str
     title: str
+
+class ShowPosts(BaseModel):
+    id: str
+    title: str
+    creator_username: str

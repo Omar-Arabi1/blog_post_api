@@ -1,6 +1,6 @@
 from fastapi import FastAPI, status, HTTPException
 from uuid import uuid4
-
+from typing import List
 from sqlalchemy.exc import IntegrityError
 
 from auth import auth
@@ -8,7 +8,7 @@ from auth.auth import user_dependency
 from user_actions import user_actions
 from databases.database import db_dependency, Base, engine
 from helpers.check_logged_in import check_logged_in
-from models.models import Post, CreatePost
+from models.models import Post, CreatePost, ShowPosts, Users
 from helpers.is_empty import is_empty
 
 app = FastAPI()
@@ -18,8 +18,33 @@ Base.metadata.create_all(bind=engine)
 app.include_router(auth.router)
 app.include_router(user_actions.router)
 
+@app.get('/')
+async def show_posts(db: db_dependency, user: user_dependency) -> None:
+    posts: List[Post] = db.query(Post).all()
+    posts_to_show: List[ShowPosts] = []
+    
+    for post in posts:
+        post_creator_id: str = post.creator_id
+        post_id: str = post.id
+        post_title: str = post.title
+        
+        user: Users = db.query(Users).filter(post_creator_id == Users.id).first()
+        
+        post_creator_username: str = user.username
+        
+        post_shows: ShowPosts = ShowPosts(
+            id=post_id,
+            title=post_title,
+            creator_username=post_creator_username
+        )
+        
+        posts_to_show.append(post_shows)
+    
+    return {'posts': posts_to_show}
+        
+
 @app.post('/post')
-def root(db: db_dependency, user: user_dependency, create_post_request: CreatePost):
+async def root(db: db_dependency, user: user_dependency, create_post_request: CreatePost):
     check_logged_in(user=user)
 
     post_title: str = create_post_request.title
