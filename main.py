@@ -52,7 +52,7 @@ async def show_posts(db: db_dependency, user: user_dependency) -> None:
 
 
 @app.post('/create_post')
-async def root(db: db_dependency, user: user_dependency, create_post_request: CreatePost):
+async def create_post(db: db_dependency, user: user_dependency, create_post_request: CreatePost) -> None:
     check_logged_in(user=user)
 
     post_title: str = create_post_request.title
@@ -97,7 +97,7 @@ async def root(db: db_dependency, user: user_dependency, create_post_request: Cr
         )
 
 @app.put('/update_post/{post_id}')
-async def update_post(post_id: str, db: db_dependency, user: user_dependency, updated_title: str) -> dict:
+async def update_post(post_id: str, db: db_dependency, user: user_dependency, updated_title: str) -> None:
     check_logged_in(user=user)
 
     post: Post = db.query(Post).filter(post_id == Post.id).first()
@@ -122,18 +122,12 @@ async def update_post(post_id: str, db: db_dependency, user: user_dependency, up
 
     post.title = updated_title
 
-    updated_post: ShowPostData = ShowPostData(
-        id=post.id,
-        creator_id=post.creator_id,
-        post_data=post.post_data,
-        title=post.title
-    )
-
     try:
         db.add(post)
         db.commit()
         db.refresh(post)
-        return {'updated_post': updated_post}
+
+        return {'updated_post': post}
     except IntegrityError:
         db.rollback()
         raise HTTPException(
@@ -142,7 +136,7 @@ async def update_post(post_id: str, db: db_dependency, user: user_dependency, up
         )
 
 @app.delete('/delete_post/{post_id}')
-async def delete_post(post_id: str, db: db_dependency, user: user_dependency) -> dict:
+async def delete_post(post_id: str, db: db_dependency, user: user_dependency) -> None:
     post: Post = db.query(Post).filter(post_id == Post.id).first()
 
     if post is None or post.creator_id != user.id:
@@ -150,13 +144,8 @@ async def delete_post(post_id: str, db: db_dependency, user: user_dependency) ->
             status_code=status.HTTP_404_NOT_FOUND,
             detail='the id could not be found'
         )
-
-    deleted_post: ShowPostData = ShowPostData(
-        id=post.id,
-        creator_id=post.creator_id,
-        post_data=post.post_data,
-        title=post.title
-    )
+    
+    deleted_post: Post = post
 
     db.query(Post).filter(post_id == Post.id).delete()
     db.query(Comment).filter(Comment.mother_post_id == post.id).delete()
