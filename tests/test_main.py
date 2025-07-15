@@ -1,4 +1,3 @@
-from fastapi.testclient import TestClient
 from httpx import Response
 
 from auth.auth import get_current_user
@@ -7,8 +6,6 @@ from main import app
 from databases.database import open_db, Base
 from databases.database_test import TestSessionLocal, open_test_db, engine
 from models.models import Users
-
-client = TestClient(app)
 
 api_requests_helper: ApiRequestsHelper = ApiRequestsHelper()
 
