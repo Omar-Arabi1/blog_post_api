@@ -46,3 +46,17 @@ class ShowUser(BaseModel):
     id: str
     username: str
     hashed_password: str
+
+class Comment(Base):
+    __tablename__ = 'comments'
+
+    id = Column(String, primary_key=True)
+    body = Column(String)
+    creator_id = Column(String)
+    mother_post_id = Column(String)
+
+class ShowComment(BaseModel):
+    id: str
+    body: str
+    creator_id: str
+    mother_post_id: str

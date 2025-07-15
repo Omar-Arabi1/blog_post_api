@@ -5,10 +5,11 @@ from sqlalchemy.exc import IntegrityError
 
 from auth import auth
 from auth.auth import user_dependency
+from post_actions import post_actions
 from user_actions import user_actions
 from databases.database import db_dependency, Base, engine
 from helpers.check_logged_in import check_logged_in
-from models.models import Post, CreatePost, ShowPostData, ShowPosts, Users
+from models.models import Comment, Post, CreatePost, ShowPostData, ShowPosts, Users
 from helpers.is_empty import is_empty
 
 app = FastAPI()
@@ -17,6 +18,7 @@ Base.metadata.create_all(bind=engine)
 
 app.include_router(auth.router)
 app.include_router(user_actions.router)
+app.include_router(post_actions.router)
 
 TITLE_MIN_CHAR_COUNT: int = 12
 POST_DATA_MIN_WORD_COUNT: int = 120
@@ -157,6 +159,7 @@ async def delete_post(post_id: str, db: db_dependency, user: user_dependency) ->
     )
 
     db.query(Post).filter(post_id == Post.id).delete()
+    db.query(Comment).filter(Comment.mother_post_id == post.id).delete()
     db.commit()
 
     return {"deleted_post": deleted_post}
