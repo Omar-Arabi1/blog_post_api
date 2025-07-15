@@ -26,7 +26,6 @@ POST_DATA_MAX_WORD_COUNT: int = 100
 TITLE_MIN_CHAR_COUNT: int = 12
 TITLE_MAX_CHAR_COUNT: int = 100
 
-
 @app.get('/')
 async def show_posts(db: db_dependency, user: user_dependency) -> None:
     posts: List[Post] = db.query(Post).all()
