@@ -20,35 +20,18 @@ app.include_router(auth.router)
 app.include_router(user_actions.router)
 app.include_router(post_actions.router)
 
-TITLE_MIN_CHAR_COUNT: int = 12
-POST_DATA_MIN_WORD_COUNT: int = 120
+POST_DATA_MIN_WORD_COUNT: int = 30
+POST_DATA_MAX_WORD_COUNT: int = 100
 
+TITLE_MIN_CHAR_COUNT: int = 12
 TITLE_MAX_CHAR_COUNT: int = 100
-POST_DATA_MAX_WORD_COUNT: int = 300
+
 
 @app.get('/')
 async def show_posts(db: db_dependency, user: user_dependency) -> None:
     posts: List[Post] = db.query(Post).all()
-    posts_to_show: List[ShowPosts] = []
 
-    for post in posts:
-        post_creator_id: str = post.creator_id
-        post_id: str = post.id
-        post_title: str = post.title
-
-        user: Users = db.query(Users).filter(post_creator_id == Users.id).first()
-
-        post_creator_username: str = user.username
-
-        post_shows: ShowPosts = ShowPosts(
-            id=post_id,
-            title=post_title,
-            creator_username=post_creator_username
-        )
-
-        posts_to_show.append(post_shows)
-
-    return {'posts': posts_to_show}
+    return {'posts': posts}
 
 
 @app.post('/create_post')

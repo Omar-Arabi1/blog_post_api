@@ -5,7 +5,7 @@ from helpers.check_logged_in import check_logged_in
 from helpers.is_empty import is_empty
 from auth.auth import user_dependency
 from databases.database import db_dependency
-from models.models import Comment, Post, ShowComment
+from models.models import Comment, Post
 
 router = APIRouter(
     prefix='/post',
@@ -30,7 +30,7 @@ async def view_comments(post_id: str, db: db_dependency, user: user_dependency) 
 
     return {'post_comments': post_comments}
 
-@router.post('/{post_id}')
+@router.post('/add_comment/{post_id}')
 async def create_comment(post_id: str, db: db_dependency, user: user_dependency, comment_body: str) -> None:
     check_logged_in(user=user)
 

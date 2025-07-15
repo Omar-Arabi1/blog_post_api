@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from sqlalchemy import Column, String, LargeBinary
+from sqlalchemy import Column, String
 from typing import Optional
 
 from databases.database import Base
@@ -36,12 +36,6 @@ class ShowPosts(BaseModel):
     title: str
     creator_username: str
 
-class ShowPostData(BaseModel):
-    id: str
-    creator_id: str
-    post_data: str
-    title: str
-
 class ShowUser(BaseModel):
     id: str
     username: str
@@ -54,9 +48,3 @@ class Comment(Base):
     body = Column(String)
     creator_id = Column(String)
     mother_post_id = Column(String)
-
-class ShowComment(BaseModel):
-    id: str
-    body: str
-    creator_id: str
-    mother_post_id: str
