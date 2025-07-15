@@ -35,11 +35,36 @@ def setup_function() -> None:
 
 def test_list_posts() -> None:
     list_posts_response: Response = api_requests_helper.list_posts_request()
-    
+
     assert list_posts_response.status_code == 200
     assert list_posts_response.json().get('posts') == []
 
 def test_launch_post() -> None:
     launch_post_response: Response = api_requests_helper.add_post_request(post_data=test_post_data, title=test_post_title)
-    
+
     assert launch_post_response.status_code == 200
+
+def test_updated_post() -> None:
+    launch_post_response: Response = api_requests_helper.add_post_request(post_data=test_post_data, title=test_post_title)
+
+    assert launch_post_response.status_code == 200
+
+    post_id: str = launch_post_response.json().get('post').get('id')
+    
+    updated_title: str = 'fake_updated_title'
+
+    updated_post_response: Response = api_requests_helper.update_post_request(updated_title=updated_title, post_id=post_id)
+    
+    assert updated_post_response.status_code == 200
+
+def test_delete_post() -> None:
+    launch_post_response: Response = api_requests_helper.add_post_request(post_data=test_post_data, title=test_post_title)
+
+    assert launch_post_response.status_code == 200
+
+    post_id: str = launch_post_response.json().get('post').get('id')
+
+    delete_post_response: Response = api_requests_helper.delete_post_request(post_id=post_id)
+    
+    assert delete_post_response.status_code == 200
+    assert delete_post_response.json().get('deleted_post') == launch_post_response.json().get('post')

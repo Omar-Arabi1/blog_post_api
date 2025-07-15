@@ -21,7 +21,7 @@ class Token(BaseModel):
 
 class Post(Base):
     __tablename__ = 'posts'
-    
+
     id = Column(String, primary_key=True)
     creator_id = Column(String)
     post_data = Column(String)
@@ -38,6 +38,6 @@ class ShowPosts(BaseModel):
 
 class ShowPostData(BaseModel):
     id: str
-    title: str
-    post_data: str
     creator_id: str
+    post_data: str
+    title: str

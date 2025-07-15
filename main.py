@@ -122,9 +122,9 @@ async def update_post(post_id: str, db: db_dependency, user: user_dependency, up
     
     updated_post: ShowPostData = ShowPostData(
         id=post.id,
-        title=post.title,
+        creator_id=post.creator_id,
         post_data=post.post_data,
-        creator_id=post.creator_id
+        title=post.title
     )
 
     try:
@@ -151,9 +151,9 @@ async def delete_post(post_id: str, db: db_dependency, user: user_dependency) ->
     
     deleted_post: ShowPostData = ShowPostData(
         id=post.id,
-        title=post.title,
+        creator_id=post.creator_id,
         post_data=post.post_data,
-        creator_id=post.creator_id
+        title=post.title
     )
 
     db.query(Post).filter(post_id == Post.id).delete()

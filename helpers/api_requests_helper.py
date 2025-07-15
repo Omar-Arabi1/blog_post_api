@@ -18,3 +18,9 @@ class ApiRequestsHelper():
         
     def add_post_request(self, post_data: str, title: str) -> Response:
         return client.post('/launch_post', json={'post_data': post_data, 'title': title}, headers={"Authorization": "fake-token"})
+    
+    def update_post_request(self, updated_title: str, post_id: str) -> Response:
+        return client.put(f'/update_post/{post_id}', params={'updated_title': updated_title}, headers={"Authorization": "fake-token"})
+    
+    def delete_post_request(self, post_id: str) -> Response:
+        return client.delete(f'/delete_post/{post_id}', headers={"Authorization": "fake-token"})
