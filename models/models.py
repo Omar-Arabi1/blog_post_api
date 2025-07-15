@@ -41,3 +41,8 @@ class ShowPostData(BaseModel):
     creator_id: str
     post_data: str
     title: str
+
+class ShowUser(BaseModel):
+    id: str
+    username: str
+    hashed_password: str

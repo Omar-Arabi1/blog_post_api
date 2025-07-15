@@ -49,7 +49,7 @@ async def show_posts(db: db_dependency, user: user_dependency) -> None:
     return {'posts': posts_to_show}
 
 
-@app.post('/launch_post')
+@app.post('/create_post')
 async def root(db: db_dependency, user: user_dependency, create_post_request: CreatePost):
     check_logged_in(user=user)
 
@@ -62,13 +62,13 @@ async def root(db: db_dependency, user: user_dependency, create_post_request: Cr
             detail="can not accept an empty title"
         )
 
-    if len(post_title) < TITLE_MIN_CHAR_COUNT and len(post_title) > TITLE_MAX_CHAR_COUNT:
+    if len(post_title) < TITLE_MIN_CHAR_COUNT or len(post_title) > TITLE_MAX_CHAR_COUNT:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
             detail='can not accept the title'
         )
 
-    if len(post_data.split()) < POST_DATA_MIN_WORD_COUNT and len(post_data.split()) > POST_DATA_MAX_WORD_COUNT:
+    if len(post_data.split()) < POST_DATA_MIN_WORD_COUNT or len(post_data.split(' ')) > POST_DATA_MAX_WORD_COUNT:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
             detail='can not accept the post data'
@@ -119,7 +119,7 @@ async def update_post(post_id: str, db: db_dependency, user: user_dependency, up
         )
 
     post.title = updated_title
-    
+
     updated_post: ShowPostData = ShowPostData(
         id=post.id,
         creator_id=post.creator_id,
@@ -148,7 +148,7 @@ async def delete_post(post_id: str, db: db_dependency, user: user_dependency) ->
             status_code=status.HTTP_404_NOT_FOUND,
             detail='the id could not be found'
         )
-    
+
     deleted_post: ShowPostData = ShowPostData(
         id=post.id,
         creator_id=post.creator_id,
@@ -158,5 +158,5 @@ async def delete_post(post_id: str, db: db_dependency, user: user_dependency) ->
 
     db.query(Post).filter(post_id == Post.id).delete()
     db.commit()
-    
+
     return {"deleted_post": deleted_post}

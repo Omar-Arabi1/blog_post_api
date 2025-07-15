@@ -2,14 +2,28 @@ from fastapi import APIRouter, HTTPException, status
 
 from auth.auth import user_dependency
 from databases.database import db_dependency
-from models.models import Users
+from models.models import Post, ShowUser, Users
 from helpers.check_logged_in import check_logged_in
 from helpers.is_empty import is_empty
 
 router = APIRouter(
-    prefix='/me',
-    tags=['me']
+    prefix='/account',
+    tags=['account']
 )
+
+@router.get('/')
+async def get_user(user: user_dependency, db: db_dependency) -> dict:
+    check_logged_in(user=user)
+    
+    user: Users = db.query(Users).filter(user.id == Users.id).first()
+    
+    user_seriazable: ShowUser = ShowUser(
+        id=user.id,
+        username=user.username,
+        hashed_password=user.hashed_password
+    )
+    
+    return {'user': user_seriazable}
 
 @router.put('/update_user/{username}')
 async def update_user(user: user_dependency, db: db_dependency, username: str):
@@ -56,4 +70,5 @@ async def delete_user(user: user_dependency, db: db_dependency):
     check_logged_in(user=user)
 
     db.query(Users).filter(user.username == Users.username).delete()
+    db.query(Post).filter(user.id == Post.creator_id).delete()
     db.commit()
