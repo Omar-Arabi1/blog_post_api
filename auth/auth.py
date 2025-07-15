@@ -9,6 +9,7 @@ from uuid import uuid4
 from sqlalchemy.exc import IntegrityError
 from typing import Optional
 
+from helpers.is_empty import is_empty
 from models.models import Users, CreateUserRequest
 from databases.database import db_dependency
 
@@ -36,7 +37,7 @@ async def create_user(db: db_dependency, create_user_request: CreateUserRequest)
         >>> https://base_link.com/auth json={username: <username>, password: <password>}
         output -> { user_attributes }
     """
-    if len(create_user_request.username.split()) == 0 or len(create_user_request.password.split()) == 0:
+    if is_empty(create_user_request.username) is False or is_empty(create_user_request.password) is False:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
             detail='can not accept an empty username or password'

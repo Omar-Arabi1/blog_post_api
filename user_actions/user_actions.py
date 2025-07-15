@@ -4,6 +4,7 @@ from auth.auth import user_dependency
 from databases.database import db_dependency
 from models.models import Users
 from helpers.check_logged_in import check_logged_in
+from helpers.is_empty import is_empty
 
 router = APIRouter(
     prefix='/me',
@@ -28,7 +29,7 @@ async def update_user(user: user_dependency, db: db_dependency, username: str):
 
     update_user = db.query(Users).filter(user.username == Users.username).first()
 
-    if len(username.split()) == 0:
+    if is_empty(update_user.username) is False:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
             detail='can not take empty username'
