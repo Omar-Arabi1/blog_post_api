@@ -8,7 +8,7 @@ from auth.auth import user_dependency
 from user_actions import user_actions
 from databases.database import db_dependency, Base, engine
 from helpers.check_logged_in import check_logged_in
-from models.models import Post, CreatePost, ShowPosts, Users
+from models.models import Post, CreatePost, ShowPostData, ShowPosts, Users
 from helpers.is_empty import is_empty
 
 app = FastAPI()
@@ -119,15 +119,44 @@ async def update_post(post_id: str, db: db_dependency, user: user_dependency, up
         )
 
     post.title = updated_title
+    
+    updated_post: ShowPostData = ShowPostData(
+        id=post.id,
+        title=post.title,
+        post_data=post.post_data,
+        creator_id=post.creator_id
+    )
 
     try:
         db.add(post)
         db.commit()
         db.refresh(post)
-        return {'updated_title': post.title}
+        return {'updated_post': updated_post}
     except IntegrityError:
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
             detail='the title given already exists'
         )
+
+@app.delete('/delete_post/{post_id}')
+async def delete_post(post_id: str, db: db_dependency, user: user_dependency) -> dict:
+    post: Post = db.query(Post).filter(post_id == Post.id).first()
+
+    if post is None or post.creator_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='the id could not be found'
+        )
+    
+    deleted_post: ShowPostData = ShowPostData(
+        id=post.id,
+        title=post.title,
+        post_data=post.post_data,
+        creator_id=post.creator_id
+    )
+
+    db.query(Post).filter(post_id == Post.id).delete()
+    db.commit()
+    
+    return {"deleted_post": deleted_post}

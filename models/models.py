@@ -35,3 +35,9 @@ class ShowPosts(BaseModel):
     id: str
     title: str
     creator_username: str
+
+class ShowPostData(BaseModel):
+    id: str
+    title: str
+    post_data: str
+    creator_id: str
