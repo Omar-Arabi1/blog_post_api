@@ -27,6 +27,9 @@ def root(db: db_dependency, user: user_dependency, create_post_request: CreatePo
 
     TITLE_MIN_CHAR_COUNT: int = 12
     POST_DATA_MIN_WORD_COUNT: int = 120
+    
+    TITLE_MAX_CHAR_COUNT: int = 100
+    POST_DATA_MAX_WORD_COUNT: int = 300
 
     if is_empty(post_title) is False or is_empty(post_data) is False:
         raise HTTPException(
@@ -34,16 +37,16 @@ def root(db: db_dependency, user: user_dependency, create_post_request: CreatePo
             detail='can not accept empty data'
         )
 
-    if len(post_title) < TITLE_MIN_CHAR_COUNT:
+    if len(post_title) < TITLE_MIN_CHAR_COUNT and len(post_title) > TITLE_MAX_CHAR_COUNT:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
-            detail='the title must at least be 12 characters'
+            detail='can not accept the title'
         )
 
-    if len(post_data.split()) < POST_DATA_MIN_WORD_COUNT:
+    if len(post_data.split()) < POST_DATA_MIN_WORD_COUNT and len(post_data.split()) > POST_DATA_MAX_WORD_COUNT:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
-            detail='the post must at least be 120 words'
+            detail='can not accept the post data'
         )
 
     post: Post = Post(
