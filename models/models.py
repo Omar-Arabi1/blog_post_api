@@ -31,16 +31,6 @@ class CreatePost(BaseModel):
     post_data: str
     title: str
 
-class ShowPosts(BaseModel):
-    id: str
-    title: str
-    creator_username: str
-
-class ShowUser(BaseModel):
-    id: str
-    username: str
-    hashed_password: str
-
 class Comment(Base):
     __tablename__ = 'comments'
 
