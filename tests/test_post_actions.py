@@ -41,38 +41,52 @@ def test_view_comments_if_comments_are_full() -> None:
     assert create_post_response.status_code == 200
 
     post_id: str = create_post_response.json().get('post').get('id')
-    
+
     for index in range(3):
         add_comment_response: Response = api_requests_helper.add_comment_request(post_id=post_id, comment_body=test_comment_body)
         assert add_comment_response.status_code == 200
-    
+
         view_comments_response: Response = api_requests_helper.view_comments_request(post_id=post_id)
-        
+
         comment_body: str = view_comments_response.json().get('post_comments')[index].get('body')
         comment_creator_id: str = view_comments_response.json().get('post_comments')[index].get('creator_id')
         comment_mother_post_id: str = view_comments_response.json().get('post_comments')[index].get('mother_post_id')
-        
-        
+
+
         assert view_comments_response.status_code == 200
         assert comment_body == test_comment_body
         assert comment_creator_id == 'test_id'
         assert comment_mother_post_id == post_id
 
-def test_add_comment() -> None:
+def test_view_comments_if_post_id_is_incorrect() -> None:
+    view_comments_response: Response = api_requests_helper.view_comments_request(post_id='i_am_not_an_actual_post_id')
+    assert view_comments_response.status_code == 404
+
+def test_add_comment_if_input_is_correct() -> None:
     create_post_response: Response = api_requests_helper.add_post_request(post_data=test_post_data, title=test_post_title)
     assert create_post_response.status_code == 200
 
     post_id: str = create_post_response.json().get('post').get('id')
-    add_comment_response: Response = api_requests_helper.add_comment_request(post_id=post_id, comment_body=comment_body)
+    add_comment_response: Response = api_requests_helper.add_comment_request(post_id=post_id, comment_body=test_comment_body)
+
+    comment_body: str = add_comment_response.json().get('comment').get('body')
+    comment_creator_id: str = add_comment_response.json().get('comment').get('creator_id')
+    comment_mother_post_id: str = add_comment_response.json().get('comment').get('mother_post_id')
 
     assert add_comment_response.status_code == 200
+    assert comment_body == test_comment_body
+    assert comment_creator_id == 'test_id'
+    assert comment_mother_post_id == post_id
+
+def test_add_comment_if_input_is_incorrect() -> None:
+    pass
 
 def test_update_comment() -> None:
     create_post_response: Response = api_requests_helper.add_post_request(post_data=test_post_data, title=test_post_title)
     assert create_post_response.status_code == 200
 
     post_id: str = create_post_response.json().get('post').get('id')
-    add_comment_response: Response = api_requests_helper.add_comment_request(post_id=post_id, comment_body=comment_body)
+    add_comment_response: Response = api_requests_helper.add_comment_request(post_id=post_id, comment_body=test_comment_body)
 
     assert add_comment_response.status_code == 200
 
@@ -88,12 +102,12 @@ def test_delete_comment() -> None:
     assert create_post_response.status_code == 200
 
     post_id: str = create_post_response.json().get('post').get('id')
-    add_comment_response: Response = api_requests_helper.add_comment_request(post_id=post_id, comment_body=comment_body)
+    add_comment_response: Response = api_requests_helper.add_comment_request(post_id=post_id, comment_body=test_comment_body)
 
     assert add_comment_response.status_code == 200
 
     comment_id: str = add_comment_response.json().get('comment').get('id')
 
     delete_comment_response: Response = api_requests_helper.delete_comment_request(comment_id=comment_id)
-    
+
     assert delete_comment_response.status_code == 200
