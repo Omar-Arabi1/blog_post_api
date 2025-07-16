@@ -94,7 +94,7 @@ def test_add_comment_if_post_id_is_incorrect() -> None:
     add_comment_response: Response = api_requests_helper.add_comment_request(post_id='i_am_not_an_actual_post_id', comment_body=test_comment_body)
     assert add_comment_response.status_code == 404
 
-def test_update_comment() -> None:
+def test_update_comment_if_input_is_correct() -> None:
     create_post_response: Response = api_requests_helper.add_post_request(post_data=test_post_data, title=test_post_title)
     assert create_post_response.status_code == 200
 
@@ -108,9 +108,38 @@ def test_update_comment() -> None:
 
     update_comment_response: Response = api_requests_helper.update_comment_request(comment_id=comment_id,  updated_comment_body=updated_comment)
 
-    assert update_comment_response.status_code == 200
+    updated_comment_id: str = update_comment_response.json().get('updated_comment').get('id')
+    updated_comment_mother_post_id: str = update_comment_response.json().get('updated_comment').get('mother_post_id')
+    updated_comment_creator_id: str = update_comment_response.json().get('updated_comment').get('creator_id')
+    updated_comment_body: str = update_comment_response.json().get('updated_comment').get('body')
 
-def test_delete_comment() -> None:
+    assert update_comment_response.status_code == 200
+    assert updated_comment_id == comment_id
+    assert updated_comment_mother_post_id == post_id
+    assert updated_comment_creator_id == 'test_id'
+    assert updated_comment_body != test_comment_body and updated_comment_body == updated_comment
+
+def test_update_comment_if_input_is_incorrect() -> None:
+    create_post_response: Response = api_requests_helper.add_post_request(post_data=test_post_data, title=test_post_title)
+    assert create_post_response.status_code == 200
+
+    post_id: str = create_post_response.json().get('post').get('id')
+    add_comment_response: Response = api_requests_helper.add_comment_request(post_id=post_id, comment_body=test_comment_body)
+    assert add_comment_response.status_code == 200
+
+    comment_id: str = add_comment_response.json().get('comment').get('id')
+
+    wrong_comment_inputs: list[str] = ['     ', 'The internet is the most recent man-made creation that connects the world. The world has narrowed down after the invention of the internet. It has demolished all boundaries, which were the barriers between people and has made everything accessible. The internet is helpful to us in different ways. It is beneficial for sharing information with people in any corner of the world. It is also used in schools, government and private offices, and other public spaces. We stay connected to our close ones and share all the recent and live news with the help of the internet. Sitting in our homes, we know about all that’s happening around the world with a click or a swipe. The internet gives an answer to almost every question and touches every aspect of our lives. this is too long to be good you know']
+
+    for wrong_comment_input in wrong_comment_inputs:
+        update_comment_response: Response = api_requests_helper.update_comment_request(comment_id=comment_id,  updated_comment_body=wrong_comment_input)
+        assert update_comment_response.status_code == 406
+
+def test_update_comment_if_comment_id_is_incorrrect() -> None:
+    update_comment_response: Response = api_requests_helper.update_comment_request(comment_id='not_real_comment_id',  updated_comment_body=test_comment_body)
+    assert update_comment_response.status_code == 404
+
+def test_delete_comment_if_id_is_correct() -> None:
     create_post_response: Response = api_requests_helper.add_post_request(post_data=test_post_data, title=test_post_title)
     assert create_post_response.status_code == 200
 
@@ -124,3 +153,8 @@ def test_delete_comment() -> None:
     delete_comment_response: Response = api_requests_helper.delete_comment_request(comment_id=comment_id)
 
     assert delete_comment_response.status_code == 200
+    assert delete_comment_response.json().get('deleted_comment') == add_comment_response.json().get('comment')
+
+def test_delete_comment_if_id_is_incorrect() -> None:
+    delete_comment_response: Response = api_requests_helper.delete_comment_request(comment_id='not_real_comment_id')
+    assert delete_comment_response.status_code == 404
