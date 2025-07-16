@@ -40,7 +40,7 @@ async def create_post(db: db_dependency, user: user_dependency, create_post_requ
     creates a post
 
     :param create_post_request = a request model containing the title (special per post) and body
-    
+
     raises a 406 if the create_post_request has something wrong
 
     :example >>> https://base_link.com/create_post json={"post_data": <post_data>, "title": <post_title>}
@@ -95,9 +95,8 @@ async def update_post(post_id: str, db: db_dependency, user: user_dependency, up
 
     :param post_id = the post id to modify the post at it
     :param updated_title = a new title (must be special per post)
-    
+
     raises 404 if post_id is not found
-    
     raises 406 if updated_title has an incorrect value
 
     :example >>> https://base_link.com/update_post/<post_id>?updated_title=<updated_title>
@@ -143,11 +142,11 @@ async def update_post(post_id: str, db: db_dependency, user: user_dependency, up
 async def delete_post(post_id: str, db: db_dependency, user: user_dependency) -> None:
     """
     delets a post by its id
-    
+
     :param post_id = to delete the post at it
-    
+
     raises 404 if post_id is not found
-    
+
     :example >>> https://base_link.com/delete_post/<post_id>
     """
     post: Post = db.query(Post).filter(post_id == Post.id).first()
