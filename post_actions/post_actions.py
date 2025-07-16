@@ -16,6 +16,15 @@ COMMENT_MAX_WORD_COUNT: int = 100
 
 @router.get('/view_comments/{post_id}')
 async def view_comments(post_id: str, db: db_dependency, user: user_dependency) -> None:
+    """
+    shows all the comments for a certain post by its id
+    
+    :param post_id = the post id to get its comments
+    
+    raises a 404 if id is not found
+    
+    :example >>> https://base_link.com/post/view_comments/<post_id>
+    """
     check_logged_in(user=user)
 
     post: Post = db.query(Post).filter(Post.id == post_id).first()
@@ -32,6 +41,16 @@ async def view_comments(post_id: str, db: db_dependency, user: user_dependency) 
 
 @router.post('/add_comment/{post_id}')
 async def create_comment(post_id: str, db: db_dependency, user: user_dependency, comment_body: str) -> None:
+    """
+    adds a comment to a post by its id
+    
+    :param post_id = the post id to comment on
+    :param comment_body = the updated comment body
+    
+    raises a 404 if post_id is not found
+    
+    :example >>> https://base_link.com/post/add_comment/<post_id>?comment_body=<comment_body>
+    """
     check_logged_in(user=user)
 
     post: Post = db.query(Post).filter(Post.id == post_id).first()
@@ -63,6 +82,17 @@ async def create_comment(post_id: str, db: db_dependency, user: user_dependency,
 
 @router.put('/update_comment/{comment_id}')
 async def update_comment(comment_id: str, db: db_dependency, user: user_dependency, updated_comment_body: str) -> None:
+    """
+    updates an existing comment by the comment's id
+    
+    :param comment_id = the id of the comment to update
+    :param updated_comment_body = the updated comment body
+    
+    raises a 404 if id is not found
+    raises a 406 if the updated comment body has something wrong
+    
+    :example >>> https://base_link.com/post/update_comment/<comment_id>?updated_comment_body=<updated_comment_body>
+    """
     check_logged_in(user=user)
 
     comment: Comment = db.query(Comment).filter(Comment.id == comment_id).first()
@@ -88,6 +118,15 @@ async def update_comment(comment_id: str, db: db_dependency, user: user_dependen
 
 @router.delete('/delete_comment/{comment_id}')
 async def delete_comment(comment_id: str, user: user_dependency, db: db_dependency) -> None:
+    """
+    deletes an existing comment by its id
+    
+    :param comment_id = the comment id to delete
+    
+    raises a 404 if id not found
+    
+    :example >>> https://base_link.com/post/delete_comment/<comment_id>
+    """
     check_logged_in(user=user)
 
     comment: Comment = db.query(Comment).filter(Comment.id == comment_id).first()

@@ -14,6 +14,7 @@ router = APIRouter(
 
 @router.get('/')
 async def get_user(user: user_dependency, db: db_dependency) -> None:
+    """ returns all the interactons the user made (posts, comments)"""
     check_logged_in(user=user)
 
     user: Users = db.query(Users).filter(user.id == Users.id).first()
