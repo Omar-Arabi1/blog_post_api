@@ -1,6 +1,6 @@
 [project]
 name = "blog-post-api"
-version = "0.3.0-alpha.2"
+version = "0.3.1-beta"
 description = "a blog post api were the user could add a post and people could react to it"
 readme = "README.md"
 requires-python = ">=3.13"
