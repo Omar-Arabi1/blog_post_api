@@ -12,14 +12,7 @@ api_requests_helper: ApiRequestsHelper = ApiRequestsHelper()
 app.dependency_overrides[get_current_user] = api_requests_helper.generate_mock_user
 app.dependency_overrides[open_db] = open_test_db
 
-test_post_data: str = "Curiosity is the foundation of human progress, a driving force that has shaped history,"\
-                      "science, art, and everyday life. It begins in childhood, where even the smallest questions—“Why is the sky blue?” or “How do birds fly?”—reflect our desire"\
-                      "to understand the world around us. As we grow, curiosity becomes more than a simple urge; it becomes a habit of mind,"\
-                      "a tool for exploration and learning. It fuels innovation, inspires creativity, and encourages"\
-                      "empathy by leading us to consider perspectives different from our own. In science, it has led to groundbreaking discoveries; in philosophy, it challenges our deepest assumptions."\
-                      "Curiosity keeps us engaged, alert, and adaptable in a rapidly"\
-                      "changing world. It transforms uncertainty into opportunity and routine into revelation. When we nurture curiosity, we not only enhance our own lives, but also contribute to "\
-                      "the advancement of society as a whole. In every question lies the seed of growth."
+test_post_data: str = "If you're looking for random paragraphs, you've come to the right place. When a random word or a random sentence isn't quite enough, the next logical step is to find a random paragraph. We created the Random Paragraph Generator with you in mind. The process is quite simple. Choose the number of random paragraphs you'd like to see and click the button. Your chosen number of paragraphs will instantly appear."
 
 test_post_title: str = "amazing curiosity fr fr"
 
