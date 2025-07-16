@@ -92,7 +92,7 @@ async def update_post(post_id: str, db: db_dependency, user: user_dependency, up
 
     if is_empty(updated_title) is True:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
             detail='can not accept an empty title'
         )
 

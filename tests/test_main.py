@@ -72,18 +72,42 @@ def test_create_post_if_data_is_incorrect() -> None:
 
         assert create_post_response.status_code == 406
 
-def test_updated_post() -> None:
-    launch_post_response: Response = api_requests_helper.add_post_request(post_data=test_post_data, title=test_post_title)
+def test_update_post_if_input_is_correct() -> None:
+    create_post_response: Response = api_requests_helper.add_post_request(post_data=test_post_data, title=test_post_title)
+    assert create_post_response.status_code == 200
 
-    assert launch_post_response.status_code == 200
+    post_id: str = create_post_response.json().get('post').get('id')
 
-    post_id: str = launch_post_response.json().get('post').get('id')
-
-    updated_title: str = 'fake_updated_title'
+    updated_title: str = 'fake updated title'
 
     updated_post_response: Response = api_requests_helper.update_post_request(updated_title=updated_title, post_id=post_id)
 
+    post_creator_id: str = updated_post_response.json().get('updated_post').get('creator_id')
+    post_data: str = updated_post_response.json().get('updated_post').get('post_data')
+    post_title: str = updated_post_response.json().get('updated_post').get('title')
+
     assert updated_post_response.status_code == 200
+    assert post_creator_id == 'test_id'
+    assert post_data == test_post_data
+    assert post_title != test_post_title and post_title == updated_title
+
+def test_update_post_if_input_is_incorrect() -> None:
+    create_post_response: Response = api_requests_helper.add_post_request(post_data=test_post_data, title=test_post_title)
+    assert create_post_response.status_code == 200
+
+    post_id: str = create_post_response.json().get('post').get('id')
+
+    wrong_updated_titles: list[str] = ['to short', '     ', 'this is also very long this should not be over a hundered letters but guess what I am doing I am making it longer thatn it should because this is supposed to be wrong data you know do not you huh you are still reading this you are wasting your time go ahead and run the test already I am long enough']
+
+    for wrong_title in wrong_updated_titles:
+        updated_post_response: Response = api_requests_helper.update_post_request(updated_title=wrong_title, post_id=post_id)
+        assert updated_post_response.status_code == 406
+
+def test_update_post_if_id_is_incorrect() -> None:
+    non_existant_post_id: str = 'i_do_not_exist'
+
+    updated_post_response: Response = api_requests_helper.update_post_request(updated_title='test updated title', post_id=non_existant_post_id)
+    assert updated_post_response.status_code == 404
 
 def test_delete_post() -> None:
     launch_post_response: Response = api_requests_helper.add_post_request(post_data=test_post_data, title=test_post_title)
