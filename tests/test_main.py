@@ -50,10 +50,27 @@ def test_list_posts_if_posts_is_full() -> None:
         assert post_title == title
         assert post_data == test_post_data
 
-def test_launch_post() -> None:
-    launch_post_response: Response = api_requests_helper.add_post_request(post_data=test_post_data, title=test_post_title)
+def test_create_post_if_data_is_correct() -> None:
+    create_post_response: Response = api_requests_helper.add_post_request(post_data=test_post_data, title=test_post_title)
 
-    assert launch_post_response.status_code == 200
+    post_creator_id: str = create_post_response.json().get('post').get('creator_id')
+    post_data: str = create_post_response.json().get('post').get('post_data')
+    post_title: str = create_post_response.json().get('post').get('title')
+
+    assert create_post_response.status_code == 200
+    assert post_creator_id == 'test_id'
+    assert post_data == test_post_data
+    assert post_title == test_post_title
+
+def test_create_post_if_data_is_incorrect() -> None:
+    wrong_post_data: list[str] = ['too short for success', '   ', 'The internet is the most recent man-made creation that connects the world. The world has narrowed down after the invention of the internet. It has demolished all boundaries, which were the barriers between people and has made everything accessible. The internet is helpful to us in different ways. It is beneficial for sharing information with people in any corner of the world. It is also used in schools, government and private offices, and other public spaces. We stay connected to our close ones and share all the recent and live news with the help of the internet. Sitting in our homes, we know about all that’s happening around the world with a click or a swipe. The internet gives an answer to almost every question and touches every aspect of our lives. basically this is longer than it should okay stop reading now and yes I stole this off of the internet okay!', test_post_data, '   ']
+
+    wrong_titles: list[str] = ['to short', '     ', 'this is also very long this should not be over a hundered letters but guess what I am doing I am making it longer thatn it should because this is supposed to be wrong data you know do not you huh you are still reading this you are wasting your time go ahead and run the test already I am long enough', 'this is ..', test_post_title]
+
+    for title, post_data in zip(wrong_titles, wrong_post_data):
+        create_post_response: Response = api_requests_helper.add_post_request(post_data=post_data, title=title)
+
+        assert create_post_response.status_code == 406
 
 def test_updated_post() -> None:
     launch_post_response: Response = api_requests_helper.add_post_request(post_data=test_post_data, title=test_post_title)
