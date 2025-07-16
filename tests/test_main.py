@@ -109,14 +109,20 @@ def test_update_post_if_id_is_incorrect() -> None:
     updated_post_response: Response = api_requests_helper.update_post_request(updated_title='test updated title', post_id=non_existant_post_id)
     assert updated_post_response.status_code == 404
 
-def test_delete_post() -> None:
-    launch_post_response: Response = api_requests_helper.add_post_request(post_data=test_post_data, title=test_post_title)
+def test_delete_post_if_id_is_correct() -> None:
+    create_post_response: Response = api_requests_helper.add_post_request(post_data=test_post_data, title=test_post_title)
 
-    assert launch_post_response.status_code == 200
+    assert create_post_response.status_code == 200
 
-    post_id: str = launch_post_response.json().get('post').get('id')
+    post_id: str = create_post_response.json().get('post').get('id')
 
     delete_post_response: Response = api_requests_helper.delete_post_request(post_id=post_id)
 
     assert delete_post_response.status_code == 200
-    assert delete_post_response.json().get('deleted_post') == launch_post_response.json().get('post')
+    assert delete_post_response.json().get('deleted_post') == create_post_response.json().get('post')
+
+def test_delete_post_if_id_is_incorrect() -> None:
+    non_existant_post_id: str = 'i_do_not_exist'
+
+    delete_post_response: Response = api_requests_helper.delete_post_request(post_id=non_existant_post_id)
+    assert delete_post_response.status_code == 404
