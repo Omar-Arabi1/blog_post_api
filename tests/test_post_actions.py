@@ -79,7 +79,20 @@ def test_add_comment_if_input_is_correct() -> None:
     assert comment_mother_post_id == post_id
 
 def test_add_comment_if_input_is_incorrect() -> None:
-    pass
+    create_post_response: Response = api_requests_helper.add_post_request(post_data=test_post_data, title=test_post_title)
+    assert create_post_response.status_code == 200
+
+    post_id: str = create_post_response.json().get('post').get('id')
+
+    wrong_comment_inputs: list[str] = ['     ', 'The internet is the most recent man-made creation that connects the world. The world has narrowed down after the invention of the internet. It has demolished all boundaries, which were the barriers between people and has made everything accessible. The internet is helpful to us in different ways. It is beneficial for sharing information with people in any corner of the world. It is also used in schools, government and private offices, and other public spaces. We stay connected to our close ones and share all the recent and live news with the help of the internet. Sitting in our homes, we know about all that’s happening around the world with a click or a swipe. The internet gives an answer to almost every question and touches every aspect of our lives. this is too long to be good you know']
+
+    for wrong_comment_input in wrong_comment_inputs:
+        add_comment_response: Response = api_requests_helper.add_comment_request(post_id=post_id, comment_body=wrong_comment_input)
+        assert add_comment_response.status_code == 406
+
+def test_add_comment_if_post_id_is_incorrect() -> None:
+    add_comment_response: Response = api_requests_helper.add_comment_request(post_id='i_am_not_an_actual_post_id', comment_body=test_comment_body)
+    assert add_comment_response.status_code == 404
 
 def test_update_comment() -> None:
     create_post_response: Response = api_requests_helper.add_post_request(post_data=test_post_data, title=test_post_title)
