@@ -5,3 +5,5 @@ a blog post api were every user could enter a post and people could comment on i
 the api uses sqlite3 for the database with FastAPI for the framework it also has full authentication and password hashing 
 
 for api help follow the documentation on top of the main/ endpoints and post/ endpoints
+
+*NOTE:* ***THIS IS NOT A PUBLIC API I DO NOT CONDONE PUTTING THIS ON A SERVER OR USING IT AS ANY SORT OF API SERIOUSLY IT HAS SECURITY RISKS LIKE THE SECRET KEY AND ALGORITHM SHOWN IN THE CODE, PLEASE DO NOT USE THIS AS ANYTHING OTHER THAN LEARNING PURPOSES***
