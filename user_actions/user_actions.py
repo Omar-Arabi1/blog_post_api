@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException, status
+from typing import List
 
 from auth.auth import user_dependency
 from databases.database import db_dependency
-from models.models import Post, Users
+from models.models import Comment, Post, Users
 from helpers.check_logged_in import check_logged_in
 from helpers.is_empty import is_empty
 
@@ -18,6 +19,15 @@ async def get_user(user: user_dependency, db: db_dependency) -> None:
     user: Users = db.query(Users).filter(user.id == Users.id).first()
 
     return {'user': user}
+
+@router.get('/my_interactions')
+async def view_my_interactions(user: user_dependency, db: db_dependency) -> None:
+    check_logged_in(user=user)
+
+    user_posts: List[Post] = db.query(Post).filter(Post.creator_id == user.id).all()
+    user_comments: List[Comment] = db.query(Comment).filter(Comment.creator_id == user.id).all()
+
+    return {'user_posts': user_posts, 'user_comment': user_comments}
 
 @router.put('/update_user/{username}')
 async def update_user(user: user_dependency, db: db_dependency, username: str):
@@ -68,8 +78,9 @@ async def delete_user(user: user_dependency, db: db_dependency):
 
     deleted_user: Users = db.query(Users).filter(user.username == Users.username).first()
 
-    db.query(Users).filter(user.username == Users.username).delete()
     db.query(Post).filter(user.id == Post.creator_id).delete()
+    db.query(Comment).filter(Comment.creator_id == user.id).delete()
+    db.query(Users).filter(user.username == Users.username).delete()
     db.commit()
 
     return {"deleted_user": deleted_user}
